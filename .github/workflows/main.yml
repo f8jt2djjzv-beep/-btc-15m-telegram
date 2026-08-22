@@ -17,7 +17,7 @@ jobs:
           python-version: "3.12"
 
       - name: Instalar requests
-        run: pip install requests
+        run: pip install requests pandas
 
       - name: Ejecutar bot
         env:
