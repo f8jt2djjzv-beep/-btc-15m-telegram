@@ -10,9 +10,12 @@ response = requests.post(
     url,
     data={
         "chat_id": CHAT_ID,
-        "text": "🤖 ¡Bot conectado correctamente! 🚀"
+        "text": "🤖 ¡Prueba exitosa! Tu bot de Telegram está conectado."
     },
     timeout=10
 )
 
+print("Respuesta de Telegram:")
 print(response.text)
+
+response.raise_for_status()
