@@ -1,14 +1,4 @@
-name: BTC 15M Telegram Bot
-
-on:
-  workflow_dispatch:
-
-jobs:
-  run-bot:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Descargar código
+name: 
         uses: actions/checkout@v4
 
       - name: Configurar Python
