@@ -7,18 +7,19 @@ CHAT_ID = os.environ["CHAT_ID"]
 
 
 def obtener_datos():
-    url = "https://api.binance.com/api/v3/klines"
+    url = "https://api.exchange.coinbase.com/products/BTC-USD/candles"
 
     params = {
-        "symbol": "BTCUSDT",
-        "interval": "15m",
-        "limit": 100
+        "granularity": 900
     }
 
     respuesta = requests.get(
         url,
         params=params,
-        timeout=10
+        timeout=10,
+        headers={
+            "User-Agent": "BTC-15M-Telegram-Bot"
+        }
     )
 
     respuesta.raise_for_status()
@@ -29,21 +30,17 @@ def obtener_datos():
         datos,
         columns=[
             "time",
-            "open",
-            "high",
             "low",
+            "high",
+            "open",
             "close",
-            "volume",
-            "close_time",
-            "quote_volume",
-            "trades",
-            "buy_volume",
-            "buy_quote_volume",
-            "ignore"
+            "volume"
         ]
     )
 
     df["close"] = df["close"].astype(float)
+
+    df = df.sort_values("time")
 
     return df
 
@@ -96,7 +93,7 @@ def analizar():
         señal = "⚪ SEÑAL DÉBIL / ESPERAR"
 
     mensaje = f"""
-₿ BTC/USDT — 15 MIN
+₿ BTC/USD — 15 MIN
 
 💰 Precio: ${precio:,.2f}
 
@@ -113,20 +110,26 @@ def analizar():
     return mensaje
 
 
+def enviar_telegram(mensaje):
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+
+    respuesta = requests.post(
+        url,
+        data={
+            "chat_id": CHAT_ID,
+            "text": mensaje
+        },
+        timeout=10
+    )
+
+    print("Respuesta de Telegram:")
+    print(respuesta.text)
+
+    respuesta.raise_for_status()
+
+
 mensaje = analizar()
 
-url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+print(mensaje)
 
-respuesta = requests.post(
-    url,
-    data={
-        "chat_id": CHAT_ID,
-        "text": mensaje
-    },
-    timeout=10
-)
-
-print("Respuesta de Telegram:")
-print(respuesta.text)
-
-respuesta.raise_for_status()
+enviar_telegram(mensaje)
